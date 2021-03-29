@@ -17,8 +17,7 @@ from os import path, remove
 
 from flashtext import KeywordProcessor
 
-from ..core.GUI import Editor, Scanner, _ask_spy_file
-from ..nest.keeper import get_path
+from GUI import Editor, Scanner, _ask_spy_file
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
@@ -213,29 +212,26 @@ class scan(WatchList):
 
 
         Parameters:
-            egg (str) : egg ID
             from_file (bool) : input own file through a file explorer
             file_path (str) : provide file path for .spy file
             stdout (bool) : print results
     """
 
 
-    def __call__(self, egg=None, from_file=False, file_path=None, stdout=False):
+    def __call__(self, from_file=False, file_path=None, stdout=False):
         watchlist = self.open_watchlist()
 
         keyword_processor = KeywordProcessor()
         keyword_processor.add_keywords_from_list(watchlist)
 
-        if egg:
-            egg_path = get_path(egg)
-        elif from_file:
+        if from_file:
             egg_path = _ask_spy_file()
         elif file_path:
             egg_path = file_path
         else:
             raise ValueError("Expected egg, from_file or file_path argument.")
 
-        gui = Scanner(egg if egg else egg_path)
+        gui = Scanner(egg_path)
 
         for line, reaction in enumerate(open(egg_path).readlines(), start=1):
             if reaction and not reaction.startswith('#'):

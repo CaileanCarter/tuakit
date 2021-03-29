@@ -9,8 +9,8 @@ import numpy as np
 from flashtext import KeywordProcessor
 from ScrumPy.Bioinf import PyoCyc
 
-from ..core.GUI import Editor, LPTable
-from .utils import HidePrints, SetUtils, split_reaction
+from GUI import Editor, LPTable
+from utils import HidePrints, SetUtils, split_reaction
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
@@ -688,54 +688,3 @@ class DataBases:
             rv[r] = gen
         return rv
 
-
-class ATP:
-
-    @staticmethod
-    def check_ATP_modes(model, elmodes, ATPase="ATPSynth", summary=True):
-        """
-        Identify elementary modes producing ATP from nothing.
-
-            Parameters:
-                model (obj) : model
-                elmodes (obj) : elementary modes
-                ATPase (str) : ATPase reaction
-                summary (bool) : print summary
-
-            Returns:
-                rv (list) : list of elementary modes producing ATP from nothing
-        """
-
-        transporters = list(filter(lambda x : x.endswith("_tx"), model.sm.cnames))
-        modes = list(elmodes.ModesOf(ATPase).keys())
-        rv = [mode for mode in modes if not SetUtils.intersect(transporters, list(elmodes.ReacsOf(mode).keys()))]
-
-        if summary:
-            log.info(f"ATP producing modes: {', '.join(rv)}")
-        return rv
-
-
-    @staticmethod
-    def Scan(model, low=0, high=100, n=100, lp=None, O2=5.0, ATPase="ATPSynth"):
-        # FIXME: final sol value goes nowhere
-        Sols = []
-        incr = (float(high)-low) / (n-1)             # scan na points between alo and ahi with incr step
-        for flux in map(lambda x: low+x*incr, range(n)):
-            lp_a = LP.build(model, reaction=ATPase, flux=flux)
-            Sols.append(lp_a)
-
-        if O2:
-            lp.SetFluxBounds({'O2_tx': (0.0, O2)})
-
-        SetATP = lambda ATP: lp.SetFluxBounds({ATPase : (ATP, None)})
-        ranges = np.arange(low, high, (high-low)/(n-1))
-        for ATPLim in ranges:
-            SetATP(ATPLim)
-            lp.Solve()
-            if lp.IsStatusOptimal():
-                sol = lp.GetPrimSol()
-                sol['ObjVal'] = lp.GetObjVal()
-                sol["ATPLim"] = ATPLim
-
-        return Sols
-    

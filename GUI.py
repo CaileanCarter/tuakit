@@ -11,7 +11,7 @@ Classes
 Functions
 ---------
 
-    pick(egg)
+    pick(fp)
 
     
 """
@@ -21,8 +21,6 @@ from idlelib import pyshell
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.filedialog import askopenfilename
-
-from ..nest import get_path, DIR
 
 
 class Editor(pyshell.EditorWindow):
@@ -113,17 +111,15 @@ class LPTable(Table):
 def _ask_spy_file():
     egg_path = askopenfilename(
                 title='tuatara - Please select a .spy file.',
-                filetypes=[('ScrumPy Files', "*.spy")],
-                initialdir=DIR
+                filetypes=[('ScrumPy Files', "*.spy")]
                 )
     return egg_path
 
 
-def pick(egg):
+def pick(fp):
     """
     Load an egg into the editor window.
     """
-    egg_path = get_path(egg)
-    Editor(filename=egg_path)
+    Editor(filename=fp)
     
 
