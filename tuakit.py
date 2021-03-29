@@ -5,7 +5,7 @@ from os import path
 
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy as np
+# import numpy as np
 from flashtext import KeywordProcessor
 from ScrumPy.Bioinf import PyoCyc
 
@@ -561,7 +561,7 @@ class DataBases:
 
             try:
                 key = names[index]
-            except:
+            except ValueError:
                 key = index
             finally:
 

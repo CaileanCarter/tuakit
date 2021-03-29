@@ -121,7 +121,6 @@ class WatchList:
     @classmethod
     def commit(cls):
         """Commit changes made in editor window to watchlist"""
-        # TODO: remove comment when development complete 
         log.info("Committing changes...")
         watchlist = []
         for line in open(tmp_path, 'r').readlines():
@@ -129,7 +128,7 @@ class WatchList:
             if line:
                 watchlist.append(line)
         cls.close_watchlist(cls, watchlist)
-        # remove(tmp_path)
+        remove(tmp_path)
         log.info("Changes have been made.")
         log.debug(f"{tmp_path} has been removed.")
 
